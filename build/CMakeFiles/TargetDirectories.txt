@@ -1,0 +1,3 @@
+/home/bao/projects/kv-store/build/CMakeFiles/kvstore.dir
+/home/bao/projects/kv-store/build/CMakeFiles/edit_cache.dir
+/home/bao/projects/kv-store/build/CMakeFiles/rebuild_cache.dir
