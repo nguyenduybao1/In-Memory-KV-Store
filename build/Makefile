@@ -153,6 +153,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/store.o: src/store.cpp.o
+.PHONY : src/store.o
+
+# target to build an object file
+src/store.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/store.cpp.o
+.PHONY : src/store.cpp.o
+
+src/store.i: src/store.cpp.i
+.PHONY : src/store.i
+
+# target to preprocess a source file
+src/store.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/store.cpp.i
+.PHONY : src/store.cpp.i
+
+src/store.s: src/store.cpp.s
+.PHONY : src/store.s
+
+# target to generate assembly for a file
+src/store.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/store.cpp.s
+.PHONY : src/store.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -165,6 +189,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/store.o"
+	@echo "... src/store.i"
+	@echo "... src/store.s"
 .PHONY : help
 
 

@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/kvstore.dir/src/main.cpp.o"
   "CMakeFiles/kvstore.dir/src/main.cpp.o.d"
+  "CMakeFiles/kvstore.dir/src/store.cpp.o"
+  "CMakeFiles/kvstore.dir/src/store.cpp.o.d"
   "kvstore"
   "kvstore.pdb"
 )

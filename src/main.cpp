@@ -1,6 +1,13 @@
 #include <iostream>
+#include "store.h"
 
 int main(){
-    std::cout << "KV Store start\n";
+    KVStore store;
+
+    store.set("a", "10");
+    std::cout << store.get("a") << "\n";
+
+    store.del("a");
+    std::cout << store.get("a") << "\n";
     return 0;
 }
