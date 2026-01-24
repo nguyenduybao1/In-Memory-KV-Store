@@ -1,7 +1,0 @@
-add_test([=[KVStoreTest.BasicSetGet]=]  /home/bao/projects/kv-store/build/kvstore_test [==[--gtest_filter=KVStoreTest.BasicSetGet]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[KVStoreTest.BasicSetGet]=]  PROPERTIES WORKING_DIRECTORY /home/bao/projects/kv-store/build SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-add_test([=[KVStoreTest.Delete]=]  /home/bao/projects/kv-store/build/kvstore_test [==[--gtest_filter=KVStoreTest.Delete]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[KVStoreTest.Delete]=]  PROPERTIES WORKING_DIRECTORY /home/bao/projects/kv-store/build SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-add_test([=[KVStoreTest.ConcurrentWrite]=]  /home/bao/projects/kv-store/build/kvstore_test [==[--gtest_filter=KVStoreTest.ConcurrentWrite]==] --gtest_also_run_disabled_tests)
-set_tests_properties([=[KVStoreTest.ConcurrentWrite]=]  PROPERTIES WORKING_DIRECTORY /home/bao/projects/kv-store/build SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-set(  kvstore_test_TESTS KVStoreTest.BasicSetGet KVStoreTest.Delete KVStoreTest.ConcurrentWrite)
