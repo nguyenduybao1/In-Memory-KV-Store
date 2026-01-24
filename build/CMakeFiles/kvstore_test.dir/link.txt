@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/kvstore_test.dir/tests/store_test.cpp.o -o kvstore_test  libkvstore_lib.a lib/libgtest_main.a lib/libgtest.a 

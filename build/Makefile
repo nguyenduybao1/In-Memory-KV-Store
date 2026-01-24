@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /home/bao/projects/kv-store/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -84,6 +94,51 @@ rebuild_cache:
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"gmock\" \"gtest\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -117,24 +172,102 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named kvstore
+# Target rules for targets named kvstore_lib
 
 # Build rule for target.
-kvstore: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore
-.PHONY : kvstore
+kvstore_lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore_lib
+.PHONY : kvstore_lib
 
 # fast build rule for target.
-kvstore/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/build
-.PHONY : kvstore/fast
+kvstore_lib/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_lib.dir/build.make CMakeFiles/kvstore_lib.dir/build
+.PHONY : kvstore_lib/fast
+
+#=============================================================================
+# Target rules for targets named kvstore_app
+
+# Build rule for target.
+kvstore_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore_app
+.PHONY : kvstore_app
+
+# fast build rule for target.
+kvstore_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_app.dir/build.make CMakeFiles/kvstore_app.dir/build
+.PHONY : kvstore_app/fast
+
+#=============================================================================
+# Target rules for targets named kvstore_test
+
+# Build rule for target.
+kvstore_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 kvstore_test
+.PHONY : kvstore_test
+
+# fast build rule for target.
+kvstore_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_test.dir/build.make CMakeFiles/kvstore_test.dir/build
+.PHONY : kvstore_test/fast
+
+#=============================================================================
+# Target rules for targets named gmock
+
+# Build rule for target.
+gmock: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock
+.PHONY : gmock
+
+# fast build rule for target.
+gmock/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build
+.PHONY : gmock/fast
+
+#=============================================================================
+# Target rules for targets named gmock_main
+
+# Build rule for target.
+gmock_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock_main
+.PHONY : gmock_main
+
+# fast build rule for target.
+gmock_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
+.PHONY : gmock_main/fast
+
+#=============================================================================
+# Target rules for targets named gtest
+
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
+
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
+
+#=============================================================================
+# Target rules for targets named gtest_main
+
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
+
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_app.dir/build.make CMakeFiles/kvstore_app.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -142,7 +275,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_app.dir/build.make CMakeFiles/kvstore_app.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -150,7 +283,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_app.dir/build.make CMakeFiles/kvstore_app.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/store.o: src/store.cpp.o
@@ -158,7 +291,7 @@ src/store.o: src/store.cpp.o
 
 # target to build an object file
 src/store.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/store.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_lib.dir/build.make CMakeFiles/kvstore_lib.dir/src/store.cpp.o
 .PHONY : src/store.cpp.o
 
 src/store.i: src/store.cpp.i
@@ -166,7 +299,7 @@ src/store.i: src/store.cpp.i
 
 # target to preprocess a source file
 src/store.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/store.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_lib.dir/build.make CMakeFiles/kvstore_lib.dir/src/store.cpp.i
 .PHONY : src/store.cpp.i
 
 src/store.s: src/store.cpp.s
@@ -174,8 +307,32 @@ src/store.s: src/store.cpp.s
 
 # target to generate assembly for a file
 src/store.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore.dir/build.make CMakeFiles/kvstore.dir/src/store.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_lib.dir/build.make CMakeFiles/kvstore_lib.dir/src/store.cpp.s
 .PHONY : src/store.cpp.s
+
+tests/store_test.o: tests/store_test.cpp.o
+.PHONY : tests/store_test.o
+
+# target to build an object file
+tests/store_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_test.dir/build.make CMakeFiles/kvstore_test.dir/tests/store_test.cpp.o
+.PHONY : tests/store_test.cpp.o
+
+tests/store_test.i: tests/store_test.cpp.i
+.PHONY : tests/store_test.i
+
+# target to preprocess a source file
+tests/store_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_test.dir/build.make CMakeFiles/kvstore_test.dir/tests/store_test.cpp.i
+.PHONY : tests/store_test.cpp.i
+
+tests/store_test.s: tests/store_test.cpp.s
+.PHONY : tests/store_test.s
+
+# target to generate assembly for a file
+tests/store_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kvstore_test.dir/build.make CMakeFiles/kvstore_test.dir/tests/store_test.cpp.s
+.PHONY : tests/store_test.cpp.s
 
 # Help Target
 help:
@@ -184,14 +341,28 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... kvstore"
+	@echo "... test"
+	@echo "... gmock"
+	@echo "... gmock_main"
+	@echo "... gtest"
+	@echo "... gtest_main"
+	@echo "... kvstore_app"
+	@echo "... kvstore_lib"
+	@echo "... kvstore_test"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
 	@echo "... src/store.o"
 	@echo "... src/store.i"
 	@echo "... src/store.s"
+	@echo "... tests/store_test.o"
+	@echo "... tests/store_test.i"
+	@echo "... tests/store_test.s"
 .PHONY : help
 
 

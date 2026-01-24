@@ -1,5 +1,5 @@
 #include <iostream>
-#include "store.h"
+#include <store.h>
 
 int main(){
     KVStore store;

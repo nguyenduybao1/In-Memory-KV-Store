@@ -1,0 +1,5 @@
+if(EXISTS "/home/bao/projects/kv-store/build/kvstore_test[1]_tests.cmake")
+  include("/home/bao/projects/kv-store/build/kvstore_test[1]_tests.cmake")
+else()
+  add_test(kvstore_test_NOT_BUILT kvstore_test_NOT_BUILT)
+endif()
