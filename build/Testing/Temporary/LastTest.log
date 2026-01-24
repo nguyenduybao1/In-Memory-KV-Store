@@ -1,3 +1,84 @@
-Start testing: Jan 24 12:16 UTC
+Start testing: Jan 24 12:25 UTC
 ----------------------------------------------------------
-End testing: Jan 24 12:16 UTC
+1/3 Testing: KVStoreTest.BasicSetGet
+1/3 Test: KVStoreTest.BasicSetGet
+Command: "/home/bao/projects/kv-store/build/kvstore_test" "--gtest_filter=KVStoreTest.BasicSetGet" "--gtest_also_run_disabled_tests"
+Directory: /home/bao/projects/kv-store/build
+"KVStoreTest.BasicSetGet" start time: Jan 24 12:25 UTC
+Output:
+----------------------------------------------------------
+Running main() from /home/bao/projects/kv-store/build/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = KVStoreTest.BasicSetGet
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from KVStoreTest
+[ RUN      ] KVStoreTest.BasicSetGet
+[       OK ] KVStoreTest.BasicSetGet (0 ms)
+[----------] 1 test from KVStoreTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"KVStoreTest.BasicSetGet" end time: Jan 24 12:25 UTC
+"KVStoreTest.BasicSetGet" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/3 Testing: KVStoreTest.Delete
+2/3 Test: KVStoreTest.Delete
+Command: "/home/bao/projects/kv-store/build/kvstore_test" "--gtest_filter=KVStoreTest.Delete" "--gtest_also_run_disabled_tests"
+Directory: /home/bao/projects/kv-store/build
+"KVStoreTest.Delete" start time: Jan 24 12:25 UTC
+Output:
+----------------------------------------------------------
+Running main() from /home/bao/projects/kv-store/build/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = KVStoreTest.Delete
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from KVStoreTest
+[ RUN      ] KVStoreTest.Delete
+[       OK ] KVStoreTest.Delete (0 ms)
+[----------] 1 test from KVStoreTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"KVStoreTest.Delete" end time: Jan 24 12:25 UTC
+"KVStoreTest.Delete" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/3 Testing: KVStoreTest.ConcurrentWrite
+3/3 Test: KVStoreTest.ConcurrentWrite
+Command: "/home/bao/projects/kv-store/build/kvstore_test" "--gtest_filter=KVStoreTest.ConcurrentWrite" "--gtest_also_run_disabled_tests"
+Directory: /home/bao/projects/kv-store/build
+"KVStoreTest.ConcurrentWrite" start time: Jan 24 12:25 UTC
+Output:
+----------------------------------------------------------
+Running main() from /home/bao/projects/kv-store/build/_deps/googletest-src/googletest/src/gtest_main.cc
+Note: Google Test filter = KVStoreTest.ConcurrentWrite
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from KVStoreTest
+[ RUN      ] KVStoreTest.ConcurrentWrite
+[       OK ] KVStoreTest.ConcurrentWrite (60 ms)
+[----------] 1 test from KVStoreTest (60 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (60 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"KVStoreTest.ConcurrentWrite" end time: Jan 24 12:25 UTC
+"KVStoreTest.ConcurrentWrite" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jan 24 12:25 UTC

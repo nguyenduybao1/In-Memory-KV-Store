@@ -1,1 +1,4 @@
+KVStoreTest.BasicSetGet 1 0.0035157
+KVStoreTest.Delete 1 0.0026264
+KVStoreTest.ConcurrentWrite 1 0.063275
 ---
