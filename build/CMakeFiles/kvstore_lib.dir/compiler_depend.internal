@@ -93,6 +93,7 @@ CMakeFiles/kvstore_lib.dir/src/store.cpp.o
  /usr/include/c++/13/mutex
  /usr/include/c++/13/new
  /usr/include/c++/13/numbers
+ /usr/include/c++/13/optional
  /usr/include/c++/13/pstl/pstl_config.h
  /usr/include/c++/13/ratio
  /usr/include/c++/13/shared_mutex

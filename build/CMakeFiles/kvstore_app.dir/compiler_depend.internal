@@ -106,6 +106,7 @@ CMakeFiles/kvstore_app.dir/src/main.cpp.o
  /usr/include/c++/13/limits
  /usr/include/c++/13/new
  /usr/include/c++/13/numbers
+ /usr/include/c++/13/optional
  /usr/include/c++/13/ostream
  /usr/include/c++/13/pstl/pstl_config.h
  /usr/include/c++/13/ratio

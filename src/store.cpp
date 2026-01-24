@@ -7,13 +7,13 @@ void KVStore::set(const std::string& key, const std::string& value){
     data[key] = value;
 }
 
-std::string KVStore::get(const std::string& key){
+std::optional<std::string> KVStore::get(const std::string& key){
     std::shared_lock<std::shared_mutex> lock(m);
     auto it = data.find(key);
     if(it != data.end()){
         return it->second;
     }
-    return "";
+    return std::nullopt;
 }
 
 void KVStore::del(const std::string& key){

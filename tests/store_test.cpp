@@ -7,7 +7,10 @@ TEST(KVStoreTest, BasicSetGet){
     KVStore s;
     s.set("a", "10");
 
-    EXPECT_EQ(s.get("a"), "10");
+    auto v = s.get("a");
+    ASSERT_TRUE(v.has_value());
+    EXPECT_EQ(*v, "10");
+    EXPECT_FALSE(s.get("missing").has_value());
 }
 
 TEST(KVStoreTest, Delete){
@@ -15,7 +18,7 @@ TEST(KVStoreTest, Delete){
     s.set("a", "10");
     s.del("a");
 
-    EXPECT_EQ(s.get("a"), "");
+    EXPECT_FALSE(s.get("a").has_value());
 }
 
 TEST(KVStoreTest, ConcurrentWrite){
@@ -35,5 +38,7 @@ TEST(KVStoreTest, ConcurrentWrite){
         t.join();
 
     
-    EXPECT_EQ(s.get("k"), "1");
+    auto v = s.get("k");
+    ASSERT_TRUE(v.has_value());
+    EXPECT_EQ(*v, "1");
 }
