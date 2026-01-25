@@ -42,3 +42,13 @@ TEST(KVStoreTest, ConcurrentWrite){
     ASSERT_TRUE(v.has_value());
     EXPECT_EQ(*v, "1");
 }
+
+TEST(KVStoreTest, TTLExpiration){
+    KVStore s;
+
+    s.set("a", "10", std::chrono::seconds(1));
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    EXPECT_FALSE(s.get("a").has_value());
+}
