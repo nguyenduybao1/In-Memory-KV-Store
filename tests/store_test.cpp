@@ -73,8 +73,28 @@ TEST(KVStoreTest, GetMakesKeyMostRecent){
     s.set("b", "2");
 
     s.get("a");      
-    s.set("c", "3");
+    s.set("c", "3");    
 
     EXPECT_TRUE(s.get("a").has_value());
     EXPECT_FALSE(s.get("b").has_value());
+}
+
+TEST(KVStoreTest, Metrics){
+    KVStore s(2);
+
+    s.set("a","1");
+
+    s.get("a"); 
+    s.get("a");
+    s.get("x");
+
+    s.set("b","2");
+    s.set("c","3");
+
+    auto st = s.stats();
+
+    EXPECT_EQ(st.hits, 2);
+    EXPECT_EQ(st.misses, 1);
+    EXPECT_EQ(st.evictions, 1);
+    EXPECT_EQ(st.size, 2);
 }

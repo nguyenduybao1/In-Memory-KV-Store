@@ -8,6 +8,13 @@
 
 using Clock = std::chrono::steady_clock;
 
+struct Stats{
+    size_t hits = 0;
+    size_t misses = 0;
+    size_t evictions = 0;
+    size_t size = 0;
+};
+
 struct Node{
     std::string value;
     std::optional<std::chrono::steady_clock::time_point> expire_at;
@@ -22,6 +29,7 @@ class KVStore{
 
         std::optional<std::string> get(const std::string& key);
         void del(const std::string& key);
+        Stats stats() const;
     private:
         std::unordered_map<std::string, Node> data;
         mutable std::shared_mutex m;
@@ -29,4 +37,8 @@ class KVStore{
         std::list<std::string> lru;
         void moveToFront(const std::string& key);
         void evictIfNeeded();
+
+        size_t hits_ = 0;
+        size_t misses_ = 0;
+        size_t evictions_ = 0;
 };

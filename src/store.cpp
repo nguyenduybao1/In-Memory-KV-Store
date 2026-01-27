@@ -51,16 +51,21 @@ std::optional<std::string> KVStore::get(const std::string& key) {
     std::unique_lock<std::shared_mutex> lock(m); 
 
     auto it = data.find(key);
-    if (it == data.end())
+    if (it == data.end()){
+        ++misses_;
         return std::nullopt;
+
+    }
 
     if (it->second.expire_at &&
         Clock::now() >= *(it->second.expire_at)) {
             lru.erase(it->second.it);
             data.erase(it);
+            ++misses_;
             return std::nullopt;
     }
 
+    ++hits_;
     moveToFront(key);
     return it->second.value;
 }
@@ -91,9 +96,21 @@ void KVStore::evictIfNeeded(){
     if(capacity == 0 || data.size() < capacity){
         return;
     }
+    ++evictions_;
     const std::string& oldKey = lru.back();
 
     data.erase(oldKey);
     lru.pop_back();
+
 }
 
+Stats KVStore::stats() const{
+    std::shared_lock<std::shared_mutex> lock(m);
+
+    return Stats{
+        hits_,
+        misses_,
+        evictions_,
+        data.size()
+    };
+}
