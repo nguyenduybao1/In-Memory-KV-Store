@@ -2,27 +2,29 @@
 #include <store.h>
 #include <vector>
 #include <thread>
+#include <chrono>
 
 TEST(KVStoreTest, BasicSetGet){
-    KVStore s;
-    s.set("a", "10");
+    KVStore s(10);
+    s.set("a", "1");
 
     auto v = s.get("a");
     ASSERT_TRUE(v.has_value());
-    EXPECT_EQ(*v, "10");
+    EXPECT_EQ(*v, "1");
     EXPECT_FALSE(s.get("missing").has_value());
 }
 
+
 TEST(KVStoreTest, Delete){
-    KVStore s;
-    s.set("a", "10");
+    KVStore s(10);
+    s.set("a", "1");
     s.del("a");
 
     EXPECT_FALSE(s.get("a").has_value());
 }
 
 TEST(KVStoreTest, ConcurrentWrite){
-    KVStore s;
+    KVStore s(10);
 
     std::vector<std::thread> threads;
 
@@ -44,11 +46,35 @@ TEST(KVStoreTest, ConcurrentWrite){
 }
 
 TEST(KVStoreTest, TTLExpiration){
-    KVStore s;
+    KVStore s(10);
 
-    s.set("a", "10", std::chrono::seconds(1));
+    s.set("a", "1", std::chrono::seconds(1));
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     EXPECT_FALSE(s.get("a").has_value());
+}
+
+TEST(KVStoreTest, Eviction){
+    KVStore s(3);
+
+    s.set("a", "1");
+    s.set("b", "2");
+    s.set("c", "3");
+    s.set("d", "4");
+
+    EXPECT_FALSE(s.get("a").has_value());
+}
+
+TEST(KVStoreTest, GetMakesKeyMostRecent){
+    KVStore s(2);
+
+    s.set("a", "1");
+    s.set("b", "2");
+
+    s.get("a");      
+    s.set("c", "3");
+
+    EXPECT_TRUE(s.get("a").has_value());
+    EXPECT_FALSE(s.get("b").has_value());
 }
