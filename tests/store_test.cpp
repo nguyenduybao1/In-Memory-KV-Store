@@ -99,21 +99,70 @@ TEST(KVStoreTest, Metrics){
     EXPECT_EQ(st.size, 2);
 }
 
-TEST(KVStoreTest, PersistenceSaveLoad){
+TEST(KVStoreTest, RDBSaveLoadBasic){
     {
         KVStore s(10);
     
         s.set("a", "1");
         s.set("b", "2");
     
-        s.save("dump.txt");  
+        s.save("dump.rdb");  
     }
 
     {
-        KVStore s(10);
-        s.load("dump.txt");
+        KVStore s2(10);
+        s2.load("dump.rdb");
 
-        EXPECT_EQ(s.get("a"), "1");
-        EXPECT_EQ(s.get("b"), "2");
+        EXPECT_EQ(s2.get("a"), "1");
+        EXPECT_EQ(s2.get("b"), "2");
     }
+}
+
+
+TEST(KVStoreTest, RDBWithTTL) {
+    KVStore s(10);
+
+    s.set("a", "1", std::chrono::seconds(1));
+    s.save("dump.rdb");
+
+    KVStore s2(10);
+    s2.load("dump.rdb");
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    EXPECT_FALSE(s2.get("a").has_value());
+}
+
+
+TEST(KVStoreTest, AOFReplay) {
+    KVStore s(10);
+
+    s.enableAOF("log.aof");
+
+    s.set("x", "10");
+    s.set("y", "20");
+    s.del("x");
+
+    s.disableAOF();
+
+    KVStore s2(10);
+    s2.loadAOF("log.aof");
+
+    EXPECT_FALSE(s2.get("x").has_value());
+    EXPECT_EQ(s2.get("y"), "20");
+}
+
+TEST(KVStoreTest, CrashRecoveryAOF) {
+    {
+        KVStore s(10);
+        s.enableAOF("crash.aof");
+        s.set("a", "1");
+        s.set("b", "2");
+    }
+
+    KVStore s2(10);
+    s2.loadAOF("crash.aof");
+
+    EXPECT_EQ(s2.get("a"), "1");
+    EXPECT_EQ(s2.get("b"), "2");
 }

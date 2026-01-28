@@ -5,6 +5,8 @@
 #include <shared_mutex>
 #include <chrono>
 #include <list>
+#include <fstream>
+
 
 using Clock = std::chrono::steady_clock;
 
@@ -33,6 +35,10 @@ class KVStore{
 
         void save(const std::string& filename) const;
         void load(const std::string& filename);
+        void enableAOF(const std::string& filename);
+        void disableAOF();
+        void loadAOF(const std::string& filename);
+        void logAOF(const std::string& cmd);
     private:
         std::unordered_map<std::string, Node> data;
         mutable std::shared_mutex m;
@@ -44,4 +50,8 @@ class KVStore{
         size_t hits_ = 0;
         size_t misses_ = 0;
         size_t evictions_ = 0;
+
+        bool aof_enabled_ = false;
+        std::ofstream aof_out_;
+        std::string aof_filename_;
 };

@@ -2,6 +2,7 @@
 #include <shared_mutex>
 #include <mutex>
 #include <fstream>
+#include <sstream>
 
 using Clock = std::chrono::steady_clock;
 
@@ -13,6 +14,8 @@ void KVStore::set(const std::string& key, const std::string& value) {
         it->second.expire_at = std::nullopt;
 
         moveToFront(key);
+      
+        logAOF("SET " + key + " " + value);
         return;
     }
 
@@ -23,6 +26,8 @@ void KVStore::set(const std::string& key, const std::string& value) {
         std::nullopt,
         lru.begin()
     };
+    
+   logAOF("SET " + key + " " + value);
 }
 
 void KVStore::set(const std::string& key,
@@ -36,6 +41,8 @@ void KVStore::set(const std::string& key,
         it->second.expire_at = expireTime;
 
         moveToFront(key);
+
+        logAOF("SETEX " + key + " " + std::to_string(ttl.count()) + " " + value);
         return;
     } 
 
@@ -46,6 +53,8 @@ void KVStore::set(const std::string& key,
         expireTime,
         lru.begin()
     };
+
+    logAOF("SETEX " + key + " " + std::to_string(ttl.count()) + " " + value);
 }
 
 std::optional<std::string> KVStore::get(const std::string& key) {
@@ -80,6 +89,7 @@ void KVStore::del(const std::string& key) {
 
     lru.erase(it->second.it);
     data.erase(it);
+    logAOF("DEL " + key);
 }
 
 KVStore::KVStore(size_t cap) : capacity(cap) {}
@@ -159,4 +169,67 @@ void KVStore::load(const std::string& filename){
             lru.begin()
         };
     }
+}
+
+void KVStore::enableAOF(const std::string& filename){
+    std::unique_lock<std::shared_mutex> lock(m);
+
+    aof_filename_ = filename;
+    aof_out_.open(filename, std::ios::app);
+    aof_enabled_ = true;
+}
+
+void KVStore::disableAOF(){
+    std::unique_lock<std::shared_mutex> lock(m);
+
+    if(aof_out_.is_open()){
+        aof_out_.close();
+    }
+    aof_enabled_ = false;
+}
+
+void KVStore::loadAOF(const std::string& filename) {
+    // disable logging while replay
+    {
+        std::unique_lock<std::shared_mutex> lock(m);
+        aof_enabled_ = false;
+    }
+
+    std::ifstream in(filename);
+    std::string line;
+
+    while (std::getline(in, line)) {
+        std::istringstream iss(line);
+
+        std::string cmd;
+        iss >> cmd;
+
+        if (cmd == "SET") {
+            std::string k, v;
+            iss >> k >> v;
+            set(k, v);
+        }
+        else if (cmd == "SETEX") {
+            std::string k, v;
+            int ttl;
+            iss >> k >> ttl >> v;
+            set(k, v, std::chrono::seconds(ttl));
+        }
+        else if (cmd == "DEL") {
+            std::string k;
+            iss >> k;
+            del(k);
+        }
+    }
+
+    {
+        std::unique_lock<std::shared_mutex> lock(m);
+        aof_enabled_ = true;
+    }
+}
+
+void KVStore::logAOF(const std::string& cmd) {
+    if (!aof_enabled_) return;
+
+    aof_out_ << cmd << "\n" << std::flush; 
 }
