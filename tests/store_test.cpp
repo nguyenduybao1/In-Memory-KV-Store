@@ -98,3 +98,22 @@ TEST(KVStoreTest, Metrics){
     EXPECT_EQ(st.evictions, 1);
     EXPECT_EQ(st.size, 2);
 }
+
+TEST(KVStoreTest, PersistenceSaveLoad){
+    {
+        KVStore s(10);
+    
+        s.set("a", "1");
+        s.set("b", "2");
+    
+        s.save("dump.txt");  
+    }
+
+    {
+        KVStore s(10);
+        s.load("dump.txt");
+
+        EXPECT_EQ(s.get("a"), "1");
+        EXPECT_EQ(s.get("b"), "2");
+    }
+}

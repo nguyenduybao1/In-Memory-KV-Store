@@ -30,6 +30,9 @@ class KVStore{
         std::optional<std::string> get(const std::string& key);
         void del(const std::string& key);
         Stats stats() const;
+
+        void save(const std::string& filename) const;
+        void load(const std::string& filename);
     private:
         std::unordered_map<std::string, Node> data;
         mutable std::shared_mutex m;

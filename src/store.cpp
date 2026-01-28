@@ -1,6 +1,7 @@
 #include "store.h"
 #include <shared_mutex>
 #include <mutex>
+#include <fstream>
 
 using Clock = std::chrono::steady_clock;
 
@@ -113,4 +114,49 @@ Stats KVStore::stats() const{
         evictions_,
         data.size()
     };
+}
+
+void KVStore::save(const std::string& filename) const {
+    std::shared_lock<std::shared_mutex> lock(m);
+    std::ofstream out(filename);
+
+    for(const auto& [key, node] : data){
+        long long expire = -1;
+
+        if(node.expire_at){
+            expire = std::chrono::duration_cast<std::chrono::seconds>(
+                node.expire_at->time_since_epoch()
+            ).count();
+        }
+
+        out << key << " "
+            << node.value << " "
+            << expire << "\n";
+    }
+}
+
+void KVStore::load(const std::string& filename){
+    std::unique_lock<std::shared_mutex> lock(m);
+    std::ifstream in(filename);
+
+    data.clear();
+    lru.clear();
+
+    std::string key,value;
+    long long expire;
+
+    while(in >> key >> value >> expire){
+        std::optional<Clock::time_point> tp = std::nullopt;
+        
+        if(expire != -1){
+            tp = Clock::time_point(std::chrono::seconds(expire));
+        }
+
+        lru.push_front(key);
+        data[key] = {
+            value,
+            tp,
+            lru.begin()
+        };
+    }
 }
