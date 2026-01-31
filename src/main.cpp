@@ -1,14 +1,6 @@
-#include <iostream>
-#include <store.h>
+#include "server.h"
 
-int main(){
-    KVStore store(1000);
-
-    store.set("a", "10");
-    std::cout << store.get("a").value_or("(nil)") << "\n";
-
-    store.del("a");
-    std::cout << store.get("a").value_or("(nil)") << "\n";
-    return 0;
-}
-
+int main() {
+    KVServer server(6379, 8, 10000);
+    server.start();
+};
