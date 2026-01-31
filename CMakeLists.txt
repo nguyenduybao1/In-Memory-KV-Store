@@ -22,6 +22,7 @@ enable_testing()
 # ======================================
 add_library(kvstore_lib
     src/store.cpp
+    src/sharded_store.cpp
 )
 
 target_include_directories(kvstore_lib PUBLIC include)

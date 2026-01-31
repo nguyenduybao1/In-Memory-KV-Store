@@ -3,6 +3,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <sharded_store.h>
 
 TEST(KVStoreTest, BasicSetGet){
     KVStore s(10);
@@ -165,4 +166,24 @@ TEST(KVStoreTest, CrashRecoveryAOF) {
 
     EXPECT_EQ(s2.get("a"), "1");
     EXPECT_EQ(s2.get("b"), "2");
+}
+
+TEST(ShardedStoreTest, ParallelWritesDifferentKeys_NoLossWithinCapacity) {
+    ShardedKVStore s(8, 15000);
+
+    std::vector<std::thread> threads;
+
+    for(int i = 0; i < 8; ++i){
+        threads.emplace_back([&, i]{
+            for(int j = 0; j < 10000; ++j){
+                s.set("k" + std::to_string(i*10000+j), "1");
+            }
+        });
+    }
+
+    for(auto& t : threads) t.join();
+
+    auto st = s.stats();
+    EXPECT_EQ(st.size, 80000);
+    EXPECT_EQ(st.evictions, 0);
 }
