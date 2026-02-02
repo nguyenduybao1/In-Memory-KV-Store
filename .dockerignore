@@ -1,3 +1,7 @@
 build
 .git
 .vscode
+tests
+*.o
+*.out
+*.log

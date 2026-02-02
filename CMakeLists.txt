@@ -40,15 +40,20 @@ target_link_libraries(kvstore_app kvstore_lib)
 # ======================================
 # Tests
 # ======================================
-add_executable(kvstore_test
-    tests/store_test.cpp
-)
+option(BUILD_TESTS "Build unit tests" OFF)
 
-target_link_libraries(
-    kvstore_test
-    kvstore_lib
-    gtest_main
-)
+if (BUILD_TESTS)
+    add_executable(kvstore_test
+        tests/store_test.cpp
+    )
 
-include(GoogleTest)
-gtest_discover_tests(kvstore_test)
+    target_link_libraries(
+        kvstore_test
+        kvstore_lib
+        gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(kvstore_test)
+endif()
+

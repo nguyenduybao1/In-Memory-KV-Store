@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  kvstore:
+    build: .
+    container_name: kvstore
+
+    ports:
+      - "6379:6379"
+
+    environment:
+      - PORT=6379
+      - SHARDS=8
+      - CAPACITY=10000
+
+    restart: always
+
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "6379"]
+      interval: 5s
+      timeout: 2s
+      retries: 5

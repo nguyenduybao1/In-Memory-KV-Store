@@ -1,25 +1,19 @@
-# ===== Build stage =====
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
-    g++ \
+    build-essential \
     cmake \
-    make
+    netcat-openbsd
 
 WORKDIR /app
+
 COPY . .
 
 RUN mkdir build && cd build && \
-    cmake .. && \
+    cmake -DBUILD_TESTS=OFF .. && \
     make -j
-
-# ===== Runtime stage =====
-FROM ubuntu:22.04
-
-WORKDIR /app
-
-COPY --from=builder /app/build/kvstore_app .
+    
 
 EXPOSE 6379
 
-CMD ["./kvstore_app"]
+CMD ["./build/kvstore_app"]
