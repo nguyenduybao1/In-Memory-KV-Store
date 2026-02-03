@@ -1,144 +1,120 @@
 <p align="center">
   <h1 align="center">⚡ KV Store</h1>
+
+
   <p align="center">
-    High-Performance • Sharded • In-Memory • Redis-like Key-Value Store (C++)
+    <img src="https://img.shields.io/badge/language-C++17-blue.svg"/>
+    <img src="https://img.shields.io/badge/build-CMake-green.svg"/>
+    <img src="https://img.shields.io/badge/tests-GTest-orange.svg"/>
+    <img src="https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white"/>
+    <img src="https://img.shields.io/badge/thread--safe-yes-success"/>
+    <img src="https://img.shields.io/badge/persistence-RDB%20%2B%20AOF-purple"/>
+    <img src="https://img.shields.io/badge/license-MIT-lightgrey"/>
   </p>
 
   <p align="center">
-    <img src="https://img.shields.io/badge/C++-17-blue.svg"/>
-    <img src="https://img.shields.io/badge/CMake-3.15+-green.svg"/>
-    <img src="https://img.shields.io/badge/Thread--Safe-Yes-success"/>
-    <img src="https://img.shields.io/badge/Sharding-Enabled-orange"/>
-    <img src="https://img.shields.io/badge/Tests-Passing-brightgreen"/>
-    <img src="https://img.shields.io/badge/License-MIT-lightgrey"/>
+    <b>Production-style in-memory database built from scratch</b><br/>
+      LRU • TTL • Snapshot • AOF • Sharding • TCP Server • Docker
   </p>
 </p>
 
+
+
+
+
 ---
 
-# ✨ Overview
+## 🚀 Overview
 
-**KV Store** is a lightweight, high-performance, in-memory key-value database
-built from scratch using **modern C++17**.
+**KVStore** is a Redis-inspired key-value database implemented entirely in **C++17**.
 
-It implements core ideas behind real-world systems like:
+Built to deeply understand:
 
-- Redis
-- Memcached
-- Distributed caches
-
-Designed to practice:
-
-- Systems programming
+- Cache design
 - Concurrency
-- Networking
-- Scalable backend architecture
+- Persistence
+- Sharding
+- Network programming
+- Systems engineering
+- Docker deployment
 
-> 💡 This project focuses on engineering fundamentals rather than frameworks.
+Think of it as:
 
----
-
-# 🚀 Features
-
-## Core
-- ✅ In-memory KV storage
-- ✅ O(1) GET / SET / DEL
-- ✅ LRU eviction
-- ✅ TTL expiration (SETEX)
-- ✅ Stats monitoring
-
-## Performance
-- ✅ Sharded architecture
-- ✅ Reduced lock contention
-- ✅ Parallel writes
-- ✅ Multi-threaded server
-
-## Networking
-- ✅ TCP socket server
-- ✅ Thread-per-client model
-- ✅ Simple text protocol
-- ✅ Redis-style CLI testing
-
-## Engineering
-- ✅ Modular clean design
-- ✅ Unit tests
-- ✅ CMake build
-- ✅ Zero dependencies
+> 🧠 **Mini Redis built from scratch**
 
 ---
 
-# 🧠 Architecture
+## ✨ Features
 
-## High-Level Flow
+### 🧩 Core Storage
+- O(1) HashMap operations
+- LRU eviction policy
+- TTL expiration
+- Thread-safe (shared_mutex)
+- Runtime metrics (hits / misses / evictions)
 
-```
-Clients (nc / benchmark / apps)
-            │
-            ▼
-        TCP Server
-   (thread per connection)
-            │
-            ▼
-       ShardedKVStore
-     ├── shard 0 (LRU)
-     ├── shard 1 (LRU)
-     ├── shard 2 (LRU)
-     └── ...
-```
+### 💾 Persistence
+- RDB snapshot (save/load)
+- AOF append-only log
+- Crash recovery
+- Durable replay
 
----
+### ⚡ Scaling
+- Sharding / partitioning
+- Multiple KVStore instances
+- Per-shard locking
+- Parallel writes
 
-## Sharding Strategy
+### 🌐 Networking
+- TCP server
+- Multi-client support (thread per connection)
+- Simple Redis-like text protocol
 
-```
-shard = hash(key) % shard_count
-```
-
-### Benefits
-
-- parallel writes
-- reduced lock contention
-- higher throughput
-- near linear scalability
+### 🐳 DevOps
+- Dockerized
+- Docker Compose ready
+- GoogleTest suite
+- CMake build
 
 ---
 
-## Inside Each Shard
+## 🧠 Architecture
 
 ```
-unordered_map   → storage
-list            → LRU order
-TTL metadata    → expiration
-mutex           → thread safety
+Client (nc / app)
+        ↓ TCP
+     KVServer
+        ↓
+  ShardedKVStore
+        ↓
++-----------+  +-----------+  +-----------+
+| KVStore 0 |  | KVStore 1 |  | KVStore N |
++-----------+  +-----------+  +-----------+
+      ↓             ↓             ↓
+ HashMap + LRU + TTL + Persistence
 ```
+
+### Design Goals
+
+- O(1) operations
+- Fine-grained locks
+- Horizontal scalability
+- Durable storage
+- Clean modular components
 
 ---
 
-# ⚡ Complexity
+## ⚙️ Build
 
-| Operation | Time | Space |
-|-----------|----------|----------|
-SET | O(1) | O(1) |
-GET | O(1) | O(1) |
-DEL | O(1) | O(1) |
-Eviction | O(1) | O(1) |
-
----
-
-# 🛠 Build
-
-## Requirements
+### Requirements
 
 - C++17
 - CMake ≥ 3.15
 - Linux / macOS / WSL
 
----
-
-## Compile
-
+### Local build
 ```bash
-git clone <your-repo>
+git clone https://github.com/nguyenduybao1/In-Memory-KV-Store
 cd kv-store
 
 mkdir build
@@ -150,7 +126,7 @@ make
 
 ---
 
-# ▶️ Run
+## ▶️ Run
 
 ```bash
 ./kvstore_app
@@ -164,7 +140,7 @@ Server listening on port 6379
 
 ---
 
-# 💻 CLI Usage
+## 🖥️ Connect Client
 
 Open another terminal:
 
@@ -172,116 +148,87 @@ Open another terminal:
 nc localhost 6379
 ```
 
----
-
-## Example Session
+Example:
 
 ```
 SET a 10
-OK
+-> OK
 
 GET a
-10
+-> 10
 
 SETEX b 5 hello
-OK
+-> OK
 
 DEL a
-OK
+-> OK
 
 STATS
-hits=1 misses=0 size=1
+-> hits=1 misses=0 size=1
+```
+
+## ▶️ Run Test
+
+```bash
+ctest
 ```
 
 ---
 
 # 📦 Supported Commands
 
-| Command | Description |
-|-------------|----------------|
-SET k v | set value |
-SETEX k ttl v | set with TTL |
-GET k | get value |
-DEL k | delete key |
-STATS | show metrics |
+| Command | Description | Example |
+|-------------|----------------|----------------|
+SET k v | set value | SET a 10
+SETEX k ttl v | set with TTL | SETEX b 5 hello |
+GET k | get value | GET a |
+DEL k | delete key | DEL a |
+STATS | show metrics | STATS |
 
 ---
 
-# 🧪 Testing
+## 🐳 Docker
 
-Run:
-
-```bash
-ctest
-```
-
-Test coverage includes:
-
-- eviction correctness
-- TTL expiration
-- concurrency safety
-- parallel writes
-- shard correctness
-
----
-
-# 📊 Benchmark (example)
-
-Machine: i7 laptop, 8 shards
-
-```
-100k writes:   ~25ms
-100k reads:    ~18ms
-```
-
-Scaling:
-
-| Shards | Throughput |
-|----------|------------|
-1 | baseline |
-4 | ~3.6x |
-8 | ~7x |
-
-> Results vary by hardware
-
----
-
-# 🐳 Docker (optional)
-
-## Dockerfile
-
-Create:
-
-```Dockerfile
-FROM ubuntu:22.04
-
-RUN apt update && apt install -y build-essential cmake
-
-WORKDIR /app
-COPY . .
-
-RUN mkdir build && cd build && cmake .. && make
-
-CMD ["./build/kvstore_app"]
-```
-
----
-
-## Build
-
+### Build image
 ```bash
 docker build -t kvstore .
 ```
 
-## Run
-
+### Run container
 ```bash
 docker run -p 6379:6379 kvstore
 ```
 
+Then connect:
+
+```bash
+nc localhost 6379
+```
+
 ---
 
-# 📁 Project Structure
+## 🐳 Docker Compose (recommended)
+
+```bash
+docker compose up --build
+```
+
+---
+
+## 🧪 Test Coverage
+
+✔ LRU eviction  
+✔ TTL expiration  
+✔ Concurrent writes  
+✔ Metrics correctness  
+✔ RDB snapshot  
+✔ AOF replay  
+✔ Crash recovery  
+✔ Sharded parallel writes  
+
+---
+
+## 📂 Project Structure
 
 ```
 kv-store/
@@ -298,106 +245,74 @@ kv-store/
 │   └── main.cpp
 │
 ├── tests/
+│   └── store_test.cpp
 │
+├── Dockerfile
+├── docker-compose.yml
 ├── CMakeLists.txt
 └── README.md
 ```
 
 ---
 
-# 🔥 Engineering Highlights
+## 📊 Complexity
 
-This project demonstrates:
-
-## Systems
-- TCP sockets
-- manual memory control
-- custom protocol
-
-## Concurrency
-- thread-per-client
-- shard-based locking
-- race-condition safe design
-
-## Data Structures
-- hash map
-- LRU cache
-- TTL expiration
-
-## Scalability
-- horizontal sharding
-- reduced contention
-- parallel writes
+| Operation | Time | Space |
+|-----------|---------|-----------|
+| GET | O(1) | O(1) |
+| SET | O(1) | O(1) |
+| DEL | O(1) | O(1) |
+| LRU | O(1) | O(n) |
+| Sharded write | O(1) amortized | O(n) |
 
 ---
 
-# 🎯 Design Goals
+## 🛠 Tech Stack
 
-- fast
-- simple
-- predictable performance
-- easy to extend
-- interview-friendly architecture
-
----
-
-# 🗺 Roadmap
-
-## Short Term
-- [ ] epoll / async I/O
-- [ ] connection pool
-- [ ] request batching
-
-## Mid Term
-- [ ] persistence (snapshot / AOF)
-- [ ] replication
-- [ ] HTTP API
-
-## Long Term
-- [ ] distributed cluster
-- [ ] consistent hashing
-- [ ] Raft consensus
+- C++17
+- STL containers
+- shared_mutex
+- GoogleTest
+- CMake
+- Linux sockets
+- Docker
 
 ---
 
-# 📚 Learning Outcomes
+## 🔥 What This Project Demonstrates
 
-After building this project you understand:
+This project showcases:
 
-- how Redis works internally
-- how to design caches
-- how sharding improves scalability
-- how TCP servers work
-- how to write concurrent C++
+- Data Structures and Algorithms
+- Systems Design
+- Multithreading & locking strategies
+- Cache algorithms (LRU)
+- Persistence (snapshot + WAL)
+- Sharding & partitioning
+- TCP networking
+- Containerization
+- Production-style engineering
 
-Perfect practice for:
-
-- Backend Engineering
-- System Design Interviews
-- Infrastructure roles
-- Big Tech preparation
-
----
-
-# 🤝 Contributing
-
-```bash
-fork → branch → commit → PR
-```
+👉 Strong preparation for **Backend / Systems / Big Tech interviews**
 
 ---
 
-# 📜 License
+## 👤 Author
 
-MIT License
+**Bảo Nguyễn**
+
+Learning journey toward:
+**Data Structures and Algorithms • Backend • Distributed Systems • Big Tech Engineering**
 
 ---
 
-# 👨‍💻 Author
+## ⭐ Support
 
-Built with ❤️ to master:
+If you find this project helpful:
 
-- Systems Programming
-- Backend Infrastructure
-- Distributed Systems
-- High-Performance C++
+⭐ Star the repo  
+🍴 Fork it  
+🚀 Build something cool on top  
+
+---
+
