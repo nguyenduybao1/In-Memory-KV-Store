@@ -194,6 +194,7 @@ void KVStore::save(const std::string& filename) const {
         }
 
         out << key << " "
+            << node.value.size() << " "
             << node.value << " "
             << expire << "\n";
     }
@@ -208,10 +209,15 @@ void KVStore::load(const std::string& filename){
 
     std::string key,value;
     long long expire;
+    size_t vlen;
 
-    while(in >> key >> value >> expire){
+    while(in >> key >> vlen){
+        in.ignore(1);
+        value.resize(vlen);
+        in.read(value.data(), static_cast<std::streamsize>(vlen));
+        in >> expire;
+
         std::optional<Clock::time_point> tp = std::nullopt;
-        
         if(expire != -1){
             tp = Clock::time_point(std::chrono::seconds(expire));
         }
