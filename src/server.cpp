@@ -29,59 +29,70 @@ void KVServer::start() {
 }
 
 void KVServer::handleClient(int fd) {
-    char buffer[1024];
+    std::string recvBuf;
+    char tmp[4096];
 
     while (true) {
-        int n = read(fd, buffer, sizeof(buffer)-1);
+        int n = read(fd, tmp, sizeof(tmp));
         if (n <= 0) break;
 
-        buffer[n] = 0;
+        recvBuf.append(tmp, n);
 
-        std::istringstream iss(buffer);
+        std::string::size_type pos;
+        while((pos = recvBuf.find('\n')) != std::string::npos){
+            std::string line = recvBuf.substr(0, pos);
+            recvBuf.erase(0, pos + 1);
 
-        std::string cmd;
-        iss >> cmd;
+            if(!line.empty() && line.back() == '\r'){
+                line.pop_back();
+            }
+            if(line.empty()) continue;
 
-        std::string response;
+            std::istringstream iss(line);
+            std::string cmd;
+            iss >> cmd;
 
-        if (cmd == "SET") {
-            std::string k, v;
-            iss >> k >> v;
-            store_.set(k, v);
-            response = "OK\n";
-        }
-        else if (cmd == "SETEX") {
-            std::string k, v;
-            int ttl;
-            iss >> k >> ttl >> v;
-            store_.set(k, v, std::chrono::seconds(ttl));
-            response = "OK\n";
-        }
-        else if (cmd == "GET") {
-            std::string k;
-            iss >> k;
-            auto v = store_.get(k);
-            response = v ? *v + "\n" : "(nil)\n";
-        }
-        else if (cmd == "DEL") {
-            std::string k;
-            iss >> k;
-            store_.del(k);
-            response = "OK\n";
-        }
-        else if (cmd == "STATS") {
-            auto s = store_.stats();
-            response =
-                "hits=" + std::to_string(s.hits) +
-                " misses=" + std::to_string(s.misses) +
-                " size=" + std::to_string(s.size) + "\n";
-        }
-        else {
-            response = "ERR unknown command\n";
-        }
+            std::string response;
 
-        write(fd, response.c_str(), response.size());
+            if (cmd == "SET") {
+                std::string k, v;
+                iss >> k >> v;
+                store_.set(k, v);
+                response = "OK\n";
+            }
+            else if (cmd == "SETEX") {
+                std::string k, v;
+                int ttl;
+                iss >> k >> ttl >> v;
+                store_.set(k, v, std::chrono::seconds(ttl));
+                response = "OK\n";
+            }
+            else if (cmd == "GET") {
+                std::string k;
+                iss >> k;
+                auto v = store_.get(k);
+                response = v ? *v + "\n" : "(nil)\n";
+            }
+            else if (cmd == "DEL") {
+                std::string k;
+                iss >> k;
+                store_.del(k);
+                response = "OK\n";
+            }
+            else if (cmd == "STATS") {
+                auto s = store_.stats();
+                response =
+                    "hits="       + std::to_string(s.hits)      +
+                    " misses="    + std::to_string(s.misses)     +
+                    " evictions=" + std::to_string(s.evictions)  +
+                    " size="      + std::to_string(s.size)       + "\n";
+            }
+            else {
+                response = "ERR unknown command\n";
+            }
+
+            write(fd, response.c_str(), response.size());
+        }
     }
-
     close(fd);
 }
