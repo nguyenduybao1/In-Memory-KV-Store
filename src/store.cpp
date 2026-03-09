@@ -58,6 +58,44 @@ void KVStore::set(const std::string& key,
 
     logAOF("SETEX " + key + " " + std::to_string(ttl.count()) + " " + value);
 }
+void KVStore::setNoLog(const std::string& key, const std::string& value) {
+    std::unique_lock<std::shared_mutex> lock(m);
+    auto it = data.find(key);
+    if(it != data.end()){
+        it->second.value     = value;
+        it->second.expire_at = std::nullopt;
+        moveToFront(key);
+        return;
+    }
+    evictIfNeeded();
+    lru.push_front(key);
+    data[key] = { value, std::nullopt, lru.begin() };
+}
+
+void KVStore::setNoLog(const std::string& key,
+                       const std::string& value,
+                       std::chrono::seconds ttl) {
+    std::unique_lock<std::shared_mutex> lock(m);
+    auto expireTime = Clock::now() + ttl;
+    auto it = data.find(key);
+    if(it != data.end()){
+        it->second.value     = value;
+        it->second.expire_at = expireTime;
+        moveToFront(key);
+        return;
+    }
+    evictIfNeeded();
+    lru.push_front(key);
+    data[key] = { value, expireTime, lru.begin() };
+}
+
+void KVStore::delNoLog(const std::string& key) {
+    std::unique_lock<std::shared_mutex> lock(m);
+    auto it = data.find(key);
+    if(it == data.end()) return;
+    lru.erase(it->second.it);
+    data.erase(it);
+}
 
 std::optional<std::string> KVStore::get(const std::string& key) {
         {
@@ -223,18 +261,18 @@ void KVStore::loadAOF(const std::string& filename) {
         if (cmd == "SET") {
             std::string k, v;
             iss >> k >> v;
-            set(k, v);
+            setNoLog(k, v);
         }
         else if (cmd == "SETEX") {
             std::string k, v;
             int ttl;
             iss >> k >> ttl >> v;
-            set(k, v, std::chrono::seconds(ttl));
+            setNoLog(k, v, std::chrono::seconds(ttl));
         }
         else if (cmd == "DEL") {
             std::string k;
             iss >> k;
-            del(k);
+            delNoLog(k);
         }
     }
 

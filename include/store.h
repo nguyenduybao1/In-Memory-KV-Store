@@ -40,6 +40,10 @@ class KVStore{
         void loadAOF(const std::string& filename);
         void logAOF(const std::string& cmd);
     private:
+        void setNoLog(const std::string& key, const std::string& value);
+        void setNoLog(const std::string& key, const std::string& value, std::chrono::seconds ttl);
+        void delNoLog(const std::string& key);
+
         std::unordered_map<std::string, Node> data;
         mutable std::shared_mutex m;
         size_t capacity;
