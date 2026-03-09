@@ -6,7 +6,7 @@
 #include <chrono>
 #include <list>
 #include <fstream>
-
+#include <atomic>
 
 using Clock = std::chrono::steady_clock;
 
@@ -47,9 +47,9 @@ class KVStore{
         void moveToFront(const std::string& key);
         void evictIfNeeded();
 
-        size_t hits_ = 0;
-        size_t misses_ = 0;
-        size_t evictions_ = 0;
+        std::atomic<size_t> hits_      {0};
+        std::atomic<size_t> misses_    {0};
+        std::atomic<size_t> evictions_ {0};
 
         bool aof_enabled_ = false;
         std::ofstream aof_out_;

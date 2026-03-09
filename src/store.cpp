@@ -6,6 +6,8 @@
 
 using Clock = std::chrono::steady_clock;
 
+
+
 void KVStore::set(const std::string& key, const std::string& value) {
     std::unique_lock<std::shared_mutex> lock(m);
     auto it = data.find(key);
@@ -132,11 +134,10 @@ void KVStore::evictIfNeeded(){
 
 Stats KVStore::stats() const{
     std::shared_lock<std::shared_mutex> lock(m);
-
     return Stats{
-        hits_,
-        misses_,
-        evictions_,
+        hits_.load(),     
+        misses_.load(),    
+        evictions_.load(), 
         data.size()
     };
 }
