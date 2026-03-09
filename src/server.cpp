@@ -11,6 +11,9 @@ KVServer::KVServer(int port, size_t shards, size_t cap)
 void KVServer::start() {
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
