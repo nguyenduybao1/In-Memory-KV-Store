@@ -58,26 +58,41 @@ void KVStore::set(const std::string& key,
 }
 
 std::optional<std::string> KVStore::get(const std::string& key) {
-    std::unique_lock<std::shared_mutex> lock(m); 
+        {
+        std::shared_lock<std::shared_mutex> lock(m);
+        auto it = data.find(key);
 
-    auto it = data.find(key);
-    if (it == data.end()){
-        ++misses_;
-        return std::nullopt;
-
-    }
-
-    if (it->second.expire_at &&
-        Clock::now() >= *(it->second.expire_at)) {
-            lru.erase(it->second.it);
-            data.erase(it);
+        if(it == data.end()) {
             ++misses_;
             return std::nullopt;
+        }
+
+        if(!it->second.expire_at || Clock::now() < *(it->second.expire_at)) {
+            std::string val = it->second.value;
+            lock.unlock();
+
+            std::unique_lock<std::shared_mutex> lock(m);
+            if(data.count(key)) moveToFront(key);
+
+            ++hits_;
+            return val;
+        }
     }
 
-    ++hits_;
-    moveToFront(key);
-    return it->second.value;
+    {
+        std::unique_lock<std::shared_mutex> lock(m);
+        auto it = data.find(key);
+        if(it != data.end() &&
+           it->second.expire_at &&
+           Clock::now() >= *(it->second.expire_at))
+        {
+            lru.erase(it->second.it);
+            data.erase(it);
+        }
+    }
+
+    ++misses_;
+    return std::nullopt;
 }
 
 void KVStore::del(const std::string& key) {

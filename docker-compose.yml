@@ -1,6 +1,7 @@
 version: "3.9"
 
 services:
+
   kvstore:
     build: .
     container_name: kvstore
