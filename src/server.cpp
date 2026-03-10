@@ -4,12 +4,17 @@
 #include <thread>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 
 KVServer::KVServer(int port, size_t shards, size_t cap)
     : port_(port), store_(shards, cap) {}
 
 void KVServer::start() {
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    if(server_fd < 0){
+        throw std::runtime_error("socket() failed");
+    }
 
     int opt = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
@@ -19,14 +24,24 @@ void KVServer::start() {
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port_);
 
-    bind(server_fd, (sockaddr*)&addr, sizeof(addr));
-    listen(server_fd, 128);
+    if(bind(server_fd, (sockaddr*)&addr, sizeof(addr)) < 0){
+        close(server_fd);
+        throw std::runtime_error("bind() failed on port " + std::to_string(port_));
+    }
+    
+    if(listen(server_fd, 128) < 0){
+        close(server_fd);
+        throw std::runtime_error("listen() failed");
+    }
 
     std::cout << "Server listening on port " << port_ << "\n";
 
     while (true) {
         int client = accept(server_fd, nullptr, nullptr);
-
+        if(client < 0){
+            std::cerr << "accept() failed, continuing...\n";
+            continue;
+        }
         std::thread(&KVServer::handleClient, this, client).detach();
     }
 }
