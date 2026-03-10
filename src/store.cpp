@@ -162,6 +162,17 @@ void KVStore::evictIfNeeded(){
     if(capacity == 0 || data.size() < capacity){
         return;
     }
+    for(auto rit = lru.rbegin(); rit != lru.rend(); ++rit){
+        auto it = data.find(*rit);
+        if(it != data.end() && it->second.expire_at && Clock::now() >= *(it->second.expire_at)){
+            ++evictions_;
+            data.erase(it);
+            lru.erase(std::next(rit).base());
+            return;
+        }
+    }
+
+    
     ++evictions_;
     const std::string& oldKey = lru.back();
 
